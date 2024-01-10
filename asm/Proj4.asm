@@ -101,7 +101,7 @@ FIB3        ADI SP, #-4          ; should be extra space for fib(x-1) value to k
             BGT R2, STACKUNDERFLOW
 
             MOV R14, FP         ; put the ret of fib(x-1) on stack
-            ADI R14, #-12
+            ADI R14, #-12   ;-12 because FP is ret addr, FP-4 is PFP, FP-8 is the int x param
             STR R3, R14
 
 ; ################ CALLING FIB x - 2 ###########
@@ -143,7 +143,7 @@ FIB3        ADI SP, #-4          ; should be extra space for fib(x-1) value to k
             CMP R2, SB
             BGT R2, STACKUNDERFLOW
 
-            MOV R14, FP         ; put the ret of fib(x-1) on stack
+            MOV R14, FP         ; put the ret of fib(x-2) on stack?
             ADI R14, #-12
             LDR R7, R14         ; R14 should still be pointing to the temp val
             ADD R6, R7          ; should be ok to stomp R6
@@ -190,8 +190,8 @@ FOR01       LDR R4, i               ; for i; i < 30; i+=2
             JMP fib
 
             MOV SP, FP          ;get rid of top (no longer needed) frame
-            MOV R1, FP          ;SP <= FP
-            ADI R1, #-4         ;get the PFP
+            ;MOV R1, FP          ;SP <= FP
+            ;ADI R1, #-4         ;get the PFP
 
             ; add x and fib(x) to the ARR
             LDR R7, input       ; get the saved input

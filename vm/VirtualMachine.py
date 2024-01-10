@@ -116,7 +116,6 @@ class VirtualMachine:
                 Register.reg_dict[reg1] = instruction[2]
 
             elif instruction[0] == 9:  # STR
-                # FIXME is this supposed to be writing to the bin file?
                 mmap_bin_file.seek(instruction[2])
                 mmap_bin_file.write(int(Register.reg_dict[reg1]).to_bytes(4, "little", signed=True))
                 mmap_bin_file.seek(Register.reg_dict["PC"])
@@ -212,6 +211,11 @@ class VirtualMachine:
                     Register.reg_dict["R3"] = sys.stdin.read(1)
                 elif instruction[1] == 99:
                     print(Register.reg_dict)
+                    # pos = mmap_bin_file.tell()
+                    # mmap_bin_file.seek(Register.reg_dict['SP'])
+                    # while mmap_bin_file.tell() < Register.reg_dict['SB']:
+                    #     print(int.from_bytes(mmap_bin_file.read(4), 'little', signed=True))
+                    # mmap_bin_file.seek(pos)
 
             elif instruction[0] == 22:  # STR_I
                 mmap_bin_file.seek(Register.reg_dict[reg2])
@@ -222,7 +226,6 @@ class VirtualMachine:
 
             elif instruction[0] == 23:  # LDR_I
                 # if reg1 in stack_regs:
-                #
                 mmap_bin_file.seek(Register.reg_dict[reg2])
                 Register.reg_dict[reg1] = int.from_bytes(mmap_bin_file.read(4), 'little', signed=True)
                 mmap_bin_file.seek(Register.reg_dict["PC"])
@@ -283,7 +286,8 @@ class VirtualMachine:
                 self.heap_point += (4 * instruction[2])  # I'm giving it int sized blocks
 
             else:  # uhh, oops?
-                print("Warning: Unknown Op Code happened probably")
+                print("Unknown Op Code, probably sent PC to narnia")
+                break
 
         # if I don't close and flush then it won't write it to the bin right? do I want it written to bin?
         # mmap_bin_file.flush()
@@ -294,7 +298,7 @@ class VirtualMachine:
 
     def makeStack(self, mmap_bin_file, sym_dict):
         old_bin_size = mmap_bin_file.size()
-        mmap_bin_file.resize(mmap_bin_file.size() + 8192)
+        mmap_bin_file.resize(mmap_bin_file.size() + 4096)
         # mmap_bin_file.seek(mmap_bin_file.size())
         # zero = 0
         # for _ in range(1024):
